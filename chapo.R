@@ -7,10 +7,10 @@ library(ggplot2)
 
 # import data, process
 chapo <- jsonlite::read_json("chapo.json")
+
 chapo <- 
-    chapo %>% dplyr::bind_rows() %>% t() %>% data.frame() %>%
-    tibble::rownames_to_column() %>% 
-    rename(date = rowname, patrons = X1, earnings = X2)
+    chapo %>% dplyr::bind_rows() %>%
+    mutate(date = names(chapo))
 
 chapo_tidy <- chapo %>% tidyr::gather(-date, key = "metric", value = "value")
 
