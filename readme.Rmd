@@ -6,7 +6,10 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, fig.height = 5, fig.width = 8)
+library(magrittr)
+library(dplyr)
+library(ggplot2)
 ```
 
 ## Podcasts
@@ -39,14 +42,59 @@ These are some of the metrics inferrable from public data. With more granular da
 
 ## Analysis
 
-We scraped a 
+We scraped data corresponding to 13 of the top 20 podcasts on Patreon.
 
-```{r}
+```{r, cache=TRUE}
 top_pods <- purrr::map_df(c("chapotraphouse", "dtns", "lastpodcastontheleft",
                                "aufeinbier", "thedickshow", "theliturgistspodcast",
                                "canadaland", "doughboys", "thebestshow",
                                "dearhankandjohn", "radiowarnerd", "hellointernet",
                                "myfavoritemurder"),
               chartreon::scrape_to_df)
+
+```
+
+The overall trends are shown below. Note the huge climber!
+
+```{r}
+top_pods %>%
+    ggplot(aes(x = date, y = value, color = podname)) + 
+    geom_line() +
+    facet_wrap(~metric, scales = "free") +
+    xlab("Date") + ylab("") + 
+    ggtitle("Patreon Podcast Trends") +
+    theme(legend.position = "bottom")
+
+```
+
+We can do the same for the change in these metrics, i.e. growth.
+
+```{r, echo=F, eval=F}
+top_pods %>%
+    group_by(podname, metric) %>%
+    mutate(delta = value / lag(value, 30)) %>%
+    ggplot(aes(x = date, y = delta, color = podname)) + 
+    geom_line() +
+    facet_wrap(~metric, scales = "free") +
+    xlab("Date") + ylab("") + 
+    ggtitle("Patreon Podcast Trends") +
+    theme(legend.position = "bottom") + scale_y_log10()
+```
+
+Here, we show month over month results, using the monthly average and calculating the month over month results.
+
+```{r, error=FALSE}
+top_pods %>%
+    group_by(podname, metric, month = cut(date, "month")) %>%
+    summarize(monthly_avg = mean(value)) %>%
+    ungroup() %>%
+    group_by(podname, metric) %>%
+    mutate(delta = monthly_avg / lag(monthly_avg, 1)) %>%
+    ggplot(aes(x = as.POSIXct(month), y = delta, color = podname)) + 
+    geom_line() +
+    facet_wrap(~metric, scales = "free") +
+    xlab("Date") + ylab("") + 
+    ggtitle("Patreon Podcast Trends") +
+    theme(legend.position = "bottom") + scale_y_log10()
 ```
 

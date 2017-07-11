@@ -1,7 +1,7 @@
 Towards Listener Analysis for Podcasts
 ================
 Chris Hua
-7/10/2017
+10 July 2017
 
 Podcasts
 --------
@@ -36,3 +36,17 @@ These are some of the metrics inferrable from public data. With more granular da
 
 Analysis
 --------
+
+We scraped data corresponding to 13 of the top 20 podcasts on Patreon.
+
+The overall trends are shown below. The huge climber is Chapo Trap House.
+
+![](readme_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-2-1.png)
+
+We can do the same for the change in these metrics, i.e. growth.
+
+Here, we show month over month results, using the monthly average and calculating the month over month results.
+
+    ## Warning: Removed 13 rows containing missing values (geom_path).
+
+![](readme_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-1.png)
