@@ -5,28 +5,23 @@ library(magrittr)
 library(tidyr)
 library(ggplot2)
 
+source("processing.R")
+
 # import data, process
-chapo <- jsonlite::read_json("chapo.json")
-
-chapo <- 
-    chapo %>% dplyr::bind_rows() %>%
-    mutate(date = names(chapo))
-
-chapo_tidy <- chapo %>% tidyr::gather(-date, key = "metric", value = "value")
-
-chapo_tidy %<>% 
-    mutate(date = as.POSIXct(as.numeric(date)/1000, origin = "1970-01-01"))
-
-chapo_tidy$value <- chapo_tidy$value %>% unlist
+chapo_tidy <- scrape_to_df("chapotraphouse")
 
 # plotting
-chapo_tidy %>%
-    ggplot(aes(x = date, y = value, color = metric)) + geom_line() + 
-    ggtitle("Chapo Trap House", "Earnings and Patrons")
+plot_top_metrics(chapo_tidy, "Chapo Trap House")
 
-chapo_tidy %>%
-    spread(metric, value) %>% 
-    group_by(date) %>%
-    summarize(epp = earnings/patrons) %>%
-    ggplot(aes(x = date, y = epp)) + geom_line() + 
-    ggtitle("Chapo Trap House", "Earnings Per Patron")
+plot_epp(chapo_tidy, "Chapo Trap House")
+
+top_pods <- purrr::map_df(c("chapotraphouse", "dtns", "lastpodcastontheleft",
+                               "aufeinbier", "thedickshow", "theliturgistspodcast",
+                               "canadaland", "doughboys", "thebestshow",
+                               "dearhankandjohn", "radiowarnerd", "hellointernet",
+                               "myfavoritemurder"),
+              scrape_to_df)
+top_pods %>%
+    ggplot(aes(x = date, y = value, color = podname)) + 
+    geom_line() +
+    facet_wrap(~metric, scales = "free")

@@ -1,7 +1,7 @@
 ---
 title: "Towards Listener Analysis for Podcasts"
 author: "Chris Hua"
-date: "7/10/2017"
+date: "10 July 2017"
 output: github_document
 ---
 
@@ -38,3 +38,15 @@ Typically, in tech data science, we create key metrics as proxies for 'success.'
 These are some of the metrics inferrable from public data. With more granular data, e.g. who subscribes and when do they unsubscribe, we could create more sophisticated models of listener behavior, a la [Fader, Hardie, Lee 2005](http://journals.ama.org/doi/abs/10.1509/jmkr.2005.42.4.415?code=amma-site). This analysis has a difficult time dealing with the heterogeneity present in listeners, since they are mostly treated the same in the data. Further research is warranted in applying these established marketing methods to understand podcast growth and listener behavior.
 
 ## Analysis
+
+We scraped a 
+
+```{r}
+top_pods <- purrr::map_df(c("chapotraphouse", "dtns", "lastpodcastontheleft",
+                               "aufeinbier", "thedickshow", "theliturgistspodcast",
+                               "canadaland", "doughboys", "thebestshow",
+                               "dearhankandjohn", "radiowarnerd", "hellointernet",
+                               "myfavoritemurder"),
+              chartreon::scrape_to_df)
+```
+

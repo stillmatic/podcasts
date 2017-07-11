@@ -1,10 +1,24 @@
-json_to_df <- function(x) {
-    x <- 
-        x %>% dplyr::bind_rows() %>%
-        mutate(date = names(x))
-    x_tidy <- x %>% tidyr::gather(-date, key = "metric", value = "value")
-    x_tidy %<>% 
-        mutate(date = as.POSIXct(as.numeric(date)/1000, origin = "1970-01-01"))
-    x_tidy$value <- x_tidy$value %>% unlist
-    return(x_tidy)
+plot_top_metrics <- function(x, pod = NULL) {
+    if(!is.null(pod)) {
+        podname <- pod
+    } else {
+        podname <- x$podname
+    }
+    x %>% ggplot(aes(x = date, y = value, color = metric)) + geom_line() + 
+        ggtitle(podname, "Earnings and Patrons")
+}
+
+plot_epp <- function(x, pod = NULL) {
+    if(!is.null(pod)) {
+        podname <- pod
+    } else {
+        podname <- x$podname
+    }
+    x %>%
+        spread(metric, value) %>% 
+        group_by(date) %>%
+        summarize(epp = earnings/patrons) %>%
+        ggplot(aes(x = date, y = epp)) + geom_line() + 
+        ggtitle(podname, "Earnings Per Patron")
+    
 }
